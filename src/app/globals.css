@@ -1,0 +1,184 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------
+   Design tokens. Light is the default; `.dark` on <html> flips them.
+   Every colour used in the app resolves through one of these so the
+   whole dashboard themes from this one block.
+------------------------------------------------------------------ */
+:root {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  --c-canvas: 246 247 251;
+  --c-surface: 255 255 255;
+  --c-elevated: 241 243 248;
+  --c-line: 226 230 238;
+  --c-line-strong: 203 210 224;
+  --c-ink: 15 23 42;
+  --c-muted: 84 94 114;
+  --c-subtle: 132 142 160;
+
+  --c-brand: 79 70 229;
+  --c-brand-hover: 67 56 202;
+  --c-brand-soft: 237 238 254;
+
+  --c-ok: 21 128 61;
+  --c-ok-soft: 220 252 231;
+  --c-warn: 161 98 7;
+  --c-warn-soft: 254 249 195;
+  --c-danger: 190 34 34;
+  --c-danger-hover: 159 26 26;
+  --c-danger-soft: 254 226 226;
+  --c-info: 3 105 161;
+  --c-info-soft: 224 242 254;
+
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 16px -6px rgb(15 23 42 / 0.1);
+  --shadow-pop: 0 8px 32px -8px rgb(15 23 42 / 0.22);
+
+  color-scheme: light;
+}
+
+.dark {
+  --c-canvas: 9 11 17;
+  --c-surface: 18 22 32;
+  --c-elevated: 26 31 44;
+  --c-line: 38 45 61;
+  --c-line-strong: 58 68 90;
+  --c-ink: 232 236 245;
+  --c-muted: 154 164 185;
+  --c-subtle: 114 125 147;
+
+  --c-brand: 129 140 248;
+  --c-brand-hover: 165 173 252;
+  --c-brand-soft: 33 36 68;
+
+  --c-ok: 74 222 128;
+  --c-ok-soft: 15 46 30;
+  --c-warn: 250 204 21;
+  --c-warn-soft: 54 42 8;
+  --c-danger: 248 113 113;
+  --c-danger-hover: 252 165 165;
+  --c-danger-soft: 58 21 23;
+  --c-info: 56 189 248;
+  --c-info-soft: 9 40 58;
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 18px -8px rgb(0 0 0 / 0.6);
+  --shadow-pop: 0 10px 38px -10px rgb(0 0 0 / 0.75);
+
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-line;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-canvas text-ink antialiased;
+    font-family: var(--font-sans);
+    /* soft ambient wash so the page never reads as a flat grey sheet */
+    background-image: radial-gradient(
+        60rem 30rem at 12% -10%,
+        rgb(var(--c-brand) / 0.07),
+        transparent 60%
+      ),
+      radial-gradient(50rem 28rem at 100% 0%, rgb(var(--c-info) / 0.06), transparent 60%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: rgb(var(--c-brand) / 0.25);
+  }
+
+  /* Native controls follow the theme */
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(var(--picker-invert, 0));
+    cursor: pointer;
+    opacity: 0.6;
+  }
+
+  .dark input[type="date"] {
+    --picker-invert: 1;
+  }
+
+  /* Scrollbars */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--c-line-strong) / 0.8);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--c-subtle) / 0.9);
+    background-clip: content-box;
+  }
+}
+
+@layer components {
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas;
+  }
+
+  .field {
+    @apply w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink
+           placeholder:text-subtle transition
+           hover:border-line-strong
+           focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/25;
+  }
+
+
+  .skeleton {
+    @apply relative overflow-hidden rounded-md bg-elevated;
+  }
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(var(--c-line-strong) / 0.35),
+      transparent
+    );
+    animation: shimmer 1.6s infinite;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
